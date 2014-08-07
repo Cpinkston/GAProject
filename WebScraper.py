@@ -10,11 +10,11 @@ def siteData(site):
 	html = url.read()
 	return url, data, html
 
-def extractTable(html):
+def extractTable(html, number):
 	playersData = []
 	table = BeautifulSoup(html).find_all('table', class_='mod-data')
 	heads = table[3].find_all('thead')
-	bodies = table[3].find('tbody').find_all('tr')
+	bodies = table[3].find_all('tbody')[number].find_all('tr')
 	for i in range(0,len(bodies)):
 		data = [td.text for td in bodies[i]]
 		playersData.append(data)
@@ -41,13 +41,18 @@ def extractLabels(contents):
 if __name__ == "__main__":
 	site, info, content = siteData('http://sports.espn.go.com/nhl/boxscore?gameId=400484245')
 
-	players = pd.DataFrame(columns=extractLabels(content))
-	team1data = extractTable(content)
-	for i in range(0,len(team1data)):
-		players.loc[i] = team1data[i]
+	away_team = pd.DataFrame(columns=extractLabels(content))
+	home_team = pd.DataFrame(columns=extractLabels(content))
+	away_team_data = extractTable(content,0)
+	home_team_data = extractTable(content,2)
+	for i in range(0,len(home_team_data)):
+		home_team.loc[i] = home_team_data[i]
+	for i in range(0,len(away_team_data)):
+		away_team.loc[i] = away_team_data[i]	
 
 	#players.loc[0] = team1data[0]	
-	print players
+	print away_team
+	print home_team
 
 	#players = pd.DataFrame.append((content))
 
