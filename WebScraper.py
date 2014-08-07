@@ -21,10 +21,6 @@ def extractTable(html, number):
 
 	frame = pd.DataFrame(playersData[0])
 	print type(frame)
-	#team_1 = table.th.text
-	#team_1_players = bodies[0].find_all('tr') + bodies[1].find_all('tr')
-	#team_1_players = get_players(team_1_players, team_1)
-	#players = players.append(team_1_players)
 	return playersData
 
 def extractLabels(contents):
@@ -33,13 +29,11 @@ def extractLabels(contents):
 	headers = heads[1].find_all('tr')[1].find_all('th')[1:]
 	headers = [th.text for th in headers]
 	columns = ['player'] + headers
-
-	#players = pd.DataFrame(columns=columns)	
+	
 	return columns
 
-
-if __name__ == "__main__":
-	site, info, content = siteData('http://sports.espn.go.com/nhl/boxscore?gameId=400484245')
+def returnData(webPage):
+	site, info, content = siteData(webPage)
 
 	away_team = pd.DataFrame(columns=extractLabels(content))
 	home_team = pd.DataFrame(columns=extractLabels(content))
@@ -49,12 +43,36 @@ if __name__ == "__main__":
 		home_team.loc[i] = home_team_data[i]
 	for i in range(0,len(away_team_data)):
 		away_team.loc[i] = away_team_data[i]	
+	
+	return away_team, home_team
 
-	#players.loc[0] = team1data[0]	
-	print away_team
-	print home_team
+def getGameInfo(webPage):
+	site, info, content = siteData(webPage)
 
-	#players = pd.DataFrame.append((content))
+	Date = ""
+	homeTeam = ""
+	awayTeam = ""
 
-	#extractTable(content)
-	#print players
+	table = BeautifulSoup(content).find_all('div', class_='matchup ')
+	teams = [h3.text for h3 in table]
+	rawTeams = teams[0].replace(")", " ").split(" ")
+	
+	if rawTeams[0] == "Red" or rawTeams[0] == "Blue" or rawTeams[0] == "Maple":
+		awayTeam = rawTeams[0]
+		homeTeam = rawTeams[5]
+	else:
+		awayTeam = rawTeams[0]
+		homeTeam = rawTeams[4]
+	
+	table2 = BeautifulSoup(content).find_all('div', class_='game-time-location')
+	date = table2[0].find('p')
+	Date = date.text
+
+	return Date, homeTeam, awayTeam
+
+if __name__ == "__main__":
+	
+	print getGameInfo('http://sports.espn.go.com/nhl/boxscore?gameId=400484253')
+	#away_team, home_team = returnData('http://sports.espn.go.com/nhl/boxscore?gameId=400484246')
+	#print away_team
+	#print home_team
