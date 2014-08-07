@@ -20,7 +20,6 @@ def extractTable(html, number):
 		playersData.append(data)
 
 	frame = pd.DataFrame(playersData[0])
-	print type(frame)
 	return playersData
 
 def extractLabels(contents):
@@ -72,7 +71,16 @@ def getGameInfo(webPage):
 
 if __name__ == "__main__":
 	
-	print getGameInfo('http://sports.espn.go.com/nhl/boxscore?gameId=400484253')
-	#away_team, home_team = returnData('http://sports.espn.go.com/nhl/boxscore?gameId=400484246')
-	#print away_team
-	#print home_team
+	date, home, away = getGameInfo('http://sports.espn.go.com/nhl/boxscore?gameId=400484248')
+	away_team, home_team = returnData('http://sports.espn.go.com/nhl/boxscore?gameId=400484248')
+	
+	away_team['TEAM'] = away
+	away_team['DATE'] = date
+	away_team['TYPE'] = 'Away'
+
+	home_team['TEAM'] = home
+	home_team['DATE'] = date
+	home_team['TYPE'] = 'Home'
+
+	print away_team
+	print home_team
