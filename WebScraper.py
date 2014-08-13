@@ -71,16 +71,25 @@ def getGameInfo(webPage):
 
 if __name__ == "__main__":
 	
-	date, home, away = getGameInfo('http://sports.espn.go.com/nhl/boxscore?gameId=400484248')
-	away_team, home_team = returnData('http://sports.espn.go.com/nhl/boxscore?gameId=400484248')
-	
-	away_team['TEAM'] = away
-	away_team['DATE'] = date
-	away_team['TYPE'] = 'Away'
+	template = 'http://sports.espn.go.com/nhl/boxscore?gameId='
+	gameId = 400484252
 
-	home_team['TEAM'] = home
-	home_team['DATE'] = date
-	home_team['TYPE'] = 'Home'
+	for i in range(0,3):
+		WebPage = template + str(gameId)
 
-	print away_team
-	print home_team
+		date, home, away = getGameInfo(WebPage)
+		away_team, home_team = returnData(WebPage)
+		
+		away_team['TEAM'] = away
+		away_team['DATE'] = date
+		away_team['TYPE'] = 'Away'
+		away_team['OPPONENT'] = home
+
+		home_team['TEAM'] = home
+		home_team['DATE'] = date
+		home_team['TYPE'] = 'Home'
+		home_team['OPPONENT'] = away
+
+		print away_team
+		print home_team
+		gameId += 1
